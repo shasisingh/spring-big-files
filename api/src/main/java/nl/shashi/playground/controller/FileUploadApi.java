@@ -1,5 +1,6 @@
 package nl.shashi.playground.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import java.nio.file.Paths;
  * {@link FileOutputStream}
  */
 @RestController
+@Slf4j
 @RequestMapping(path = "/api/v1/administration/large-files")
 public class FileUploadApi {
 
@@ -33,6 +35,8 @@ public class FileUploadApi {
         for (MultipartFile multipartFile : files) {
             var buffer = new byte[BUFFER_SIZE];
             int bytesRead;
+
+            log.info("received file filename:{}", multipartFile.getOriginalFilename());
             try (var outStream = new FileOutputStream(Paths.get(outputDirectory).resolve(customerId).toString());
                     var stream = multipartFile.getInputStream()) {
                 while ((bytesRead = stream.read(buffer)) != -1) {
@@ -40,9 +44,12 @@ public class FileUploadApi {
                 }
             } catch (IOException e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getLocalizedMessage());
+            } finally {
+                log.info("end request filename:{}", multipartFile.getOriginalFilename());
             }
 
         }
+
         return ResponseEntity.ok("***** API Call Successful! ***** ");
     }
 

@@ -13,6 +13,7 @@ import org.springframework.integration.dsl.Pollers;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
@@ -28,14 +29,15 @@ public class FilePollerConfiguration {
 
 
     @Bean
-    public IntegrationFlow filePoller(MessageSource<File> sourceDirectory, FileHandler fileHandler) {
+    public IntegrationFlow filePoller(MessageSource<File> sourceDirectory, FileHandler fileHandler, Executor taskExecutor) {
         return IntegrationFlows.from(sourceDirectory,
                 configurer ->
                         configurer
                                 .role(FILE_POLLER_ROLE)
                                 .autoStartup(false)
                                 .poller(Pollers.fixedDelay(filePollerFixedDelayTimeInMillisecond, TimeUnit.MILLISECONDS)
-                                        .maxMessagesPerPoll(filePollerMaxMessagePerPoll))
+                                        .maxMessagesPerPoll(filePollerMaxMessagePerPoll)
+                                        .taskExecutor(taskExecutor))
         ).filter(FilePollerUtility::onlyFiles)
                 .filter(FilePollerUtility::fileExists)
                 .handle(fileHandler)

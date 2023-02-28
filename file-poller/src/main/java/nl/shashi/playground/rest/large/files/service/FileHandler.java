@@ -15,8 +15,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.UUID;
 
 import static java.nio.file.Files.deleteIfExists;
 
@@ -50,8 +48,6 @@ public class FileHandler implements MessageHandler {
     }
 
     private void post(File payload) throws IOException {
-        Files.writeString(payload.toPath(), UUID.randomUUID().toString().concat(payload.getName()));
-
         var request = buildRequest(payload);
         String restResponse = restTemplate.postForObject(REMOTE_URL, request, String.class);
         log.info(restResponse);
