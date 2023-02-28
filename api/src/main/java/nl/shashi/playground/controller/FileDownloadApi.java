@@ -28,7 +28,7 @@ import static java.lang.String.format;
 @RequestMapping(path = "/api/v1/administration/large-files")
 public class FileDownloadApi {
 
-    @Value("${file-poller.output.directory}")
+    @Value("${files.storage.directory}")
     private String downloadDirectory;
 
     @SneakyThrows

@@ -13,7 +13,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Paths;
 
 import static java.nio.file.Paths.get;
 
@@ -27,7 +26,7 @@ public class FileUploadApi {
 
     public static final int BUFFER_SIZE = 8 *1024;
 
-    @Value("${file-poller.output.directory}")
+    @Value("${files.storage.directory}")
     private String outputDirectory;
 
     @PostMapping(value = "/upload")
