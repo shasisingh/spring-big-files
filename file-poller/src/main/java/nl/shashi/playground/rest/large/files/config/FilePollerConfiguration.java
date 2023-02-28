@@ -5,6 +5,7 @@ import nl.shashi.playground.rest.large.files.util.FilePollerUtility;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.support.TaskExecutorAdapter;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.dsl.IntegrationFlow;
@@ -26,6 +27,9 @@ public class FilePollerConfiguration {
 
     @Value("${filePoller.maxMessagePerPoll}")
     private int filePollerMaxMessagePerPoll;
+
+    @Value("${filePoller.transfer.chunk.size:1024}")
+    private int transferChunkSize;
 
 
     @Bean
@@ -54,9 +58,13 @@ public class FilePollerConfiguration {
      * @return SimpleClientHttpRequestFactory
      */
     @Bean
-    public SimpleClientHttpRequestFactory requestFactory(){
+    public SimpleClientHttpRequestFactory requestFactory(Executor taskExecutor){
         var requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setBufferRequestBody(false);
+        requestFactory.setChunkSize(transferChunkSize);
+        requestFactory.setTaskExecutor(new TaskExecutorAdapter(taskExecutor));
         return requestFactory;
     }
+
+
 }
