@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,7 +34,7 @@ public class FileDownloadApi {
 
     @SneakyThrows
     @GetMapping(value = "/download")
-    public ResponseEntity<Resource> downloadFile(@RequestParam(value = "filename", required = true) String filename) {
+    public ResponseEntity<Resource> downloadFile(@RequestParam(value = "filename") String filename) {
 
         var file = Paths.get(downloadDirectory).resolve(filename).toFile();
         if (!file.exists()) {

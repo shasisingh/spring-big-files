@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,10 +35,13 @@ public class FileUploadApi {
             @RequestParam(value = "files") MultipartFile[] files,
             @RequestParam(value = "customerId") String customerId) {
 
+
+        var stopWatch = new StopWatch("Measure Code Execution.");
+
         for (MultipartFile multipartFile : files) {
             var buffer = new byte[BUFFER_SIZE];
             int bytesRead;
-
+            stopWatch.start(multipartFile.getOriginalFilename());
             log.info("received file filename:{}", multipartFile.getOriginalFilename());
             try (var outStream = new FileOutputStream(get(outputDirectory).resolve(customerId).toString());
                     var inputStream = multipartFile.getInputStream()) {
@@ -47,11 +51,12 @@ public class FileUploadApi {
             } catch (IOException e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getLocalizedMessage());
             } finally {
+                stopWatch.stop();
                 log.info("end request filename:{}", multipartFile.getOriginalFilename());
             }
-
         }
 
+        log.info(stopWatch.prettyPrint());
         return ResponseEntity.ok("***** API Call Successful! ***** ");
     }
 
