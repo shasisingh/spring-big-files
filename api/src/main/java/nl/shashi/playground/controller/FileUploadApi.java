@@ -15,6 +15,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
 
+import static java.nio.file.Paths.get;
+
 /**
  * {@link FileOutputStream}
  */
@@ -24,6 +26,7 @@ import java.nio.file.Paths;
 public class FileUploadApi {
 
     public static final int BUFFER_SIZE = 8 *1024;
+
     @Value("${file-poller.output.directory}")
     private String outputDirectory;
 
@@ -37,9 +40,9 @@ public class FileUploadApi {
             int bytesRead;
 
             log.info("received file filename:{}", multipartFile.getOriginalFilename());
-            try (var outStream = new FileOutputStream(Paths.get(outputDirectory).resolve(customerId).toString());
-                    var stream = multipartFile.getInputStream()) {
-                while ((bytesRead = stream.read(buffer)) != -1) {
+            try (var outStream = new FileOutputStream(get(outputDirectory).resolve(customerId).toString());
+                    var inputStream = multipartFile.getInputStream()) {
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
                     outStream.write(buffer, 0, bytesRead);
                 }
             } catch (IOException e) {
