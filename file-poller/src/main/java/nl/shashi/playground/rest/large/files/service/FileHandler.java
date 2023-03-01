@@ -1,7 +1,9 @@
 package nl.shashi.playground.rest.large.files.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import nl.shashi.playground.rest.large.files.webclient.Client;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -19,13 +21,19 @@ import java.io.IOException;
 import static java.nio.file.Files.deleteIfExists;
 
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FileHandler implements MessageHandler {
 
-    public static final String REMOTE_URL = "http://127.0.0.1:8081/api/v1/administration/large-files/upload";
+    @Value("${external.service.uri}")
+    private String remoteUrl;
+
+    @Value("${api.call.restTemplate:true}")
+    private boolean isRestTemplateCall;
+
 
     private final ConcurrentMetadataStore concurrentMetadataStore;
     private final RestTemplate restTemplate;
+    private final Client webClient;
 
     @Override
     public void handleMessage(Message<?> message) throws MessagingException {
@@ -33,7 +41,11 @@ public class FileHandler implements MessageHandler {
         var payload = (File) message.getPayload();
         log.info("File received. fileName:{}", payload.getName());
         try {
-            post(payload);
+            if (isRestTemplateCall) {
+                postUsingRestTemplate(payload);
+            } else {
+                webClient.post(payload);
+            }
             tableMetaDataCleanup(payload);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -47,10 +59,10 @@ public class FileHandler implements MessageHandler {
         log.info("Database cleanup has been initiated, filename:{}", messagePayload.getPath());
     }
 
-    private void post(File payload) throws IOException {
+    private void postUsingRestTemplate(File payload) throws IOException {
         var request = buildRequest(payload);
-        String restResponse = restTemplate.postForObject(REMOTE_URL, request, String.class);
-        log.info(restResponse);
+        String restResponse = restTemplate.postForObject(remoteUrl, request, String.class);
+        log.info("RestTemplate ==>{}", restResponse);
     }
 
     private void deleteFileFromProcessing(final File messagePayload) throws IOException {

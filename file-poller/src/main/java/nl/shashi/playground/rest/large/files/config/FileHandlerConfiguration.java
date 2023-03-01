@@ -1,6 +1,7 @@
 package nl.shashi.playground.rest.large.files.config;
 
 import nl.shashi.playground.rest.large.files.service.FileHandler;
+import nl.shashi.playground.rest.large.files.webclient.Client;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +22,8 @@ public class FileHandlerConfiguration {
     private String outputDirectory;
 
     @Bean
-    public FileHandler fileHandler(ConcurrentMetadataStore concurrentMetadataStore, RestTemplate restTemplate) {
-        return new FileHandler(concurrentMetadataStore, restTemplate);
+    public FileHandler fileHandler(ConcurrentMetadataStore concurrentMetadataStore, RestTemplate restTemplate, Client client) {
+        return new FileHandler(concurrentMetadataStore, restTemplate, client);
     }
 
     @PostConstruct
