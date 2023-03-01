@@ -18,5 +18,6 @@
 
 * Pooling from Server 1
 * Uploading to Server 2 via api call
+* Downloading from Server 2 via api call
 
 
