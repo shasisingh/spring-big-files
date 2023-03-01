@@ -14,3 +14,9 @@
 * Tested using WebClient and RestTemplate
 
 
+## Strategy
+
+* Pooling from Server 1
+* Uploading to Server 2 via api call
+
+
