@@ -11,5 +11,6 @@
 |3761352708  |100%      |aeb1a269-1814-4d2b-b2d8-c2b5369c3e70_5000MB.xml    |   3.7613527   |
 
 * Application with running with VM options -Xms256m -Xmx2G
+* Tested using WebClient and RestTemplate
 
 

@@ -20,8 +20,8 @@ public class Client {
 
     private final WebClient webClient;
 
-    public void post(File payload){
-        var multipartBodyBuilder=buildRequest(payload);
+    public void post(File payload) {
+        var multipartBodyBuilder = buildRequest(payload);
         Mono<String> result = invokeRequest(multipartBodyBuilder);
         log.info("WebClient ==>{}", result.share().block());
     }
